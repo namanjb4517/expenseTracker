@@ -1,6 +1,7 @@
 package com.example.app.auth;
 
 
+import com.example.app.eventProducer.UserInfoProducer;
 import com.example.app.repository.UserRepository;
 import com.example.app.service.UserDetailsServiceImpl;
 //import com.mysql.cj.protocol.AuthenticationProvider;
@@ -33,10 +34,13 @@ public class SecurityConfig {
     @Autowired
     private final UserDetailsServiceImpl userDetailsServiceImpl;
 
+    @Autowired
+    private final UserInfoProducer userInfoProducer;
+
     @Bean
     @Autowired
-    public UserDetailsService userDetailsService(UserRepository userRepository, PasswordEncoder passwordEncoder){
-        return new UserDetailsServiceImpl(userRepository, passwordEncoder);
+    public UserDetailsService userDetailsService(UserRepository userRepository, PasswordEncoder passwordEncoder, UserInfoProducer userInfoProducer){
+        return new UserDetailsServiceImpl(userRepository, passwordEncoder, userInfoProducer);
     }
 
     @Bean
