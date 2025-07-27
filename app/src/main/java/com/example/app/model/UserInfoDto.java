@@ -14,11 +14,15 @@ import lombok.*;
 @Setter
 public class UserInfoDto extends UserInfo {
 
+    @NonNull
     private String firstName;
 
+    @NonNull
     private String lastName; //last_name
 
+    @NonNull
     private Long phoneNumber;
 
+    @NonNull
     private String email;
 }
