@@ -1,6 +1,7 @@
 package com.example.app.service;
 
 import com.example.app.entities.UserInfo;
+import com.example.app.eventProducer.UserInfoEvent;
 import com.example.app.eventProducer.UserInfoProducer;
 import com.example.app.model.UserInfoDto;
 import com.example.app.repository.UserRepository;
@@ -64,7 +65,15 @@ public class UserDetailsServiceImpl implements UserDetailsService
         String userId = UUID.randomUUID().toString();
         userRepository.save(new UserInfo(userId, userInfoDto.getUsername(), userInfoDto.getPassword(), new HashSet<>()));
         // pushEventToQueue
-        userInfoProducer.sendEventToKafka(userInfoDto);
+        userInfoProducer.sendEventToKafka(getUserInfoEvent(userInfoDto, userId));
         return true;
+    }
+
+    private UserInfoEvent getUserInfoEvent(UserInfoDto userInfoDto, String userid){
+        return UserInfoEvent.builder().userId(userid)
+                .firstName(userInfoDto.getFirstName())
+                .lastname(userInfoDto.getLastName())
+                .email(userInfoDto.getEmail())
+                .phoneNumber(userInfoDto.getPhoneNumber()).build();
     }
 }
