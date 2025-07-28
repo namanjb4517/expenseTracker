@@ -72,7 +72,7 @@ public class UserDetailsServiceImpl implements UserDetailsService
     private UserInfoEvent getUserInfoEvent(UserInfoDto userInfoDto, String userid){
         return UserInfoEvent.builder().userId(userid)
                 .firstName(userInfoDto.getFirstName())
-                .lastname(userInfoDto.getLastName())
+                .lastName(userInfoDto.getLastName())
                 .email(userInfoDto.getEmail())
                 .phoneNumber(userInfoDto.getPhoneNumber()).build();
     }
