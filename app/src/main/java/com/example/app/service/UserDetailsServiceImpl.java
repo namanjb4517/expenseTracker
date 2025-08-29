@@ -1,6 +1,8 @@
 package com.example.app.service;
 
 import com.example.app.entities.UserInfo;
+import com.example.app.eventProducer.UserInfoEvent;
+import com.example.app.eventProducer.UserInfoProducer;
 import com.example.app.model.UserInfoDto;
 import com.example.app.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -31,6 +34,8 @@ public class UserDetailsServiceImpl implements UserDetailsService
     @Autowired
     private final PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private final UserInfoProducer userInfoProducer;
 
     private static final Logger log = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
 
@@ -61,6 +66,19 @@ public class UserDetailsServiceImpl implements UserDetailsService
         String userId = UUID.randomUUID().toString();
         userRepository.save(new UserInfo(userId, userInfoDto.getUsername(), userInfoDto.getPassword(), new HashSet<>()));
         // pushEventToQueue
+        userInfoProducer.sendEventToKafka(getUserInfoEvent(userInfoDto, userId));
         return true;
+    }
+
+    public String getUserByUsername(String userName){
+        return Optional.of(userRepository.findByUsername(userName)).map(UserInfo::getUserId).orElse(null);
+    }
+
+    private UserInfoEvent getUserInfoEvent(UserInfoDto userInfoDto, String userid){
+        return UserInfoEvent.builder().userId(userid)
+                .firstName(userInfoDto.getFirstName())
+                .lastName(userInfoDto.getLastName())
+                .email(userInfoDto.getEmail())
+                .phoneNumber(userInfoDto.getPhoneNumber()).build();
     }
 }
